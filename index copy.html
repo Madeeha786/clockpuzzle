@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>clockfinal</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #121212;
+            font-family: 'Courier New', monospace;
+            color: #e0e0e0;
+        }
+        .clock-container {
+            position: relative;
+            width: 320px;
+            height: 420px;
+            text-align: center;
+        }
+        .clock-face {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            border-radius: 50%;
+            border: 12px solid #3a3a3a;
+            position: relative;
+            box-shadow: 
+                0 0 15px rgba(0,0,0,0.8),
+                inset 0 0 20px rgba(0,0,0,0.5);
+            background-image: radial-gradient(circle, #2a2a2a 0%, #1a1a1a 70%);
+        }
+        /* Clock numbers */
+        .number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.7);
+        }
+        .number span {
+            position: absolute;
+            transform-origin: 0 0;
+        }
+        /* Clock hands */
+        .hand {
+            position: absolute;
+            left: 50%;
+            bottom: 50%;
+            transform-origin: 50% 100%;
+            transform: translateX(-50%) rotate(0deg);
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.7);
+        }
+        .hour-hand {
+            width: 8px;
+            height: 60px;
+            background: #2E86C1;
+            z-index: 10;
+        }
+        .minute-hand {
+            width: 6px;
+            height: 90px;
+            z-index: 9;
+            background: #c0c0c0;
+            /* Enhanced cracked effect */
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="90" viewBox="0 0 6 90"><path d="M0,0 L6,0 L3,5 L6,10 L1,15 L6,20 L2,25 L6,30 L0,35 L6,40 L3,45 L6,50 L0,55 L6,60 L2,65 L6,70 L1,75 L6,80 L3,85 L6,90 L0,90 Z" fill="black"/></svg>');
+            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="90" viewBox="0 0 6 90"><path d="M0,0 L6,0 L3,5 L6,10 L1,15 L6,20 L2,25 L6,30 L0,35 L6,40 L3,45 L6,50 L0,55 L6,60 L2,65 L6,70 L1,75 L6,80 L3,85 L6,90 L0,90 Z" fill="black"/></svg>');
+        }
+        .second-hand {
+            width: 3px;
+            height: 100px;
+            background: #d4af37;
+            z-index: 8;
+        }
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: #d4af37;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 11;
+            box-shadow: 0 0 10px #d4af37;
+        }
+        /* Button Groups */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            min-width: 80px;
+            background: #2a2a2a;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #d4af37;
+            color: #121212;
+            box-shadow: 0 0 10px #d4af37;
+        }
+        /* Feedback */
+        .feedback {
+            height: 40px;
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .success {
+            color: #27ae60;
+            text-shadow: 0 0 8px rgba(39, 174, 96, 0.7);
+        }
+        .error {
+            color: #c0c0c0;
+        }
+        /* Antique effects */
+        .clock-face::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 30% 30%, 
+                    rgba(212, 175, 55, 0.1) 0%, 
+                    transparent 20%),
+                linear-gradient(45deg, 
+                    rgba(0,0,0,0.1) 0%, 
+                    rgba(0,0,0,0.3) 100%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="clock-face">
+            <!-- Clock numbers -->
+            <div class="number" id="clockNumbers"></div>
+            
+            <!-- Clock hands -->
+            <div class="hand hour-hand" id="hourHand"></div>
+            <div class="hand minute-hand" id="minuteHand"></div>
+            <div class="hand second-hand" id="secondHand"></div>
+            <div class="center-dot"></div>
+        </div>
+        
+        <!-- Hour Controls -->
+        <div class="button-group">
+            <button id="hourUp">▲ Hour</button>
+            <button id="hourDown">▼ Hour</button>
+        </div>
+        
+        <!-- Minute Controls -->
+        <div class="button-group">
+            <button id="minuteUp">▲ Minute</button>
+            <button id="minuteDown">▼ Minute</button>
+        </div>
+        
+        <div class="feedback" id="feedback">
+            Set the time to 2:05
+        </div>
+    </div>
+
+    <script>
+        // Initialize elements
+        const hourHand = document.getElementById('hourHand');
+        const minuteHand = document.getElementById('minuteHand');
+        const secondHand = document.getElementById('secondHand');
+        const feedback = document.getElementById('feedback');
+        const clockNumbers = document.getElementById('clockNumbers');
+        
+        // Create clock numbers
+        for (let i = 1; i <= 12; i++) {
+            const number = document.createElement('span');
+            const angle = (i * 30) * (Math.PI / 180);
+            const radius = 120;
+            const x = 140 + Math.sin(angle) * radius - 10;
+            const y = 140 - Math.cos(angle) * radius - 10;
+            
+            number.textContent = i;
+            number.style.left = `${x}px`;
+            number.style.top = `${y}px`;
+            clockNumbers.appendChild(number);
+        }
+        
+        // Fixed second hand at 6 (180 degrees)
+        secondHand.style.transform = `translateX(-50%) rotate(180deg)`;
+        
+        // State
+        let hourPosition = 0;   // 0 = 12, 1 = 1, ..., 11 = 11
+        let minutePosition = 0; // 0 = 00, 1 = 05, 2 = 10, ..., 11 = 55
+        
+        // Update clock and check solution
+        function updateClock() {
+            // Move hands
+            hourHand.style.transform = `translateX(-50%) rotate(${hourPosition * 30}deg)`;
+            minuteHand.style.transform = `translateX(-50%) rotate(${minutePosition * 30}deg)`;
+            
+            // Check for 2:05 (hour=2, minute=1)
+            if (hourPosition === 2 && minutePosition === 1) {
+                feedback.textContent = "🔓 Locker Unlocked!";
+                feedback.className = "feedback success";
+            } else {
+                // Show current time as feedback
+                const hours = hourPosition === 0 ? 12 : hourPosition;
+                const minutes = minutePosition * 5;
+                feedback.textContent = `Current: ${hours}:${minutes.toString().padStart(2, '0')}`;
+                feedback.className = "feedback error";
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('hourUp').addEventListener('click', () => {
+            hourPosition = (hourPosition + 1) % 12;
+            updateClock();
+        });
+        
+        document.getElementById('hourDown').addEventListener('click', () => {
+            hourPosition = (hourPosition - 1 + 12) % 12;
+            updateClock();
+        });
+        
+        document.getElementById('minuteUp').addEventListener('click', () => {
+            minutePosition = (minutePosition + 1) % 12;
+            updateClock();
+        });
+        
+        document.getElementById('minuteDown').addEventListener('click', () => {
+            minutePosition = (minutePosition - 1 + 12) % 12;
+            updateClock();
+        });
+        
+        // Initialize
+        updateClock();
+    </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
